@@ -30,7 +30,7 @@ button{
 }
 .todo-content {
 	width: 80%;
-	background: rgba(233, 233, 233, .3);
+	background: rgba(255, 255, 255, 0.7);
 	display: flex;
 	flex-direction: column;
 	align-items: center;
