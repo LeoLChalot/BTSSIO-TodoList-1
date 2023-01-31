@@ -1,6 +1,6 @@
-<?php 
-// require_once(__DIR__ . '/require/connexion.php');
-require_once(__DIR__ . '/require/class.php');
+<?php
+require_once(__DIR__ . '/require/connexion.php');
+// require_once(__DIR__ . '/require/class.php');
 
 if (!empty($_GET['action'])) {
     $action = htmlspecialchars($_GET['action']);
@@ -9,13 +9,11 @@ if (!empty($_GET['action'])) {
         case 'add':
             if (!empty($_POST['todoAdd'])) {
                 $text = htmlspecialchars($_POST['todoAdd']);
-                $todo = new Todo($text);
-                $todo->add();
-                
-                // $todoAdd = htmlspecialchars($_POST['todoAdd']);
-                // $sth = $conn->prepare("INSERT INTO todo(text) VALUES(:text)");
-                // $sth->bindParam(":text", $todoAdd);
-                // $sth->execute();
+                $sth = $conn->prepare("INSERT INTO todo(text) VALUES(:text)");
+                $sth->bindParam(":text", $text);
+                $sth->execute();
+                // $todo = new Todo($text);
+                // $todo->add();
                 header('location: index.php');
             } else {
                 header('location: index.php');
@@ -49,6 +47,11 @@ if (!empty($_GET['action'])) {
             } else {
                 header('location: index.php');
             }
+            break;
+        case 'deleteAll':
+            $sth = "DELETE FROM todo";
+            $conn->exec($sth);
+            header('location: index.php');
             break;
     }
 }

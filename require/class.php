@@ -2,60 +2,89 @@
 require_once(__DIR__ . '/connexion.php');
 date_default_timezone_set('Europe/Paris');
 
-class Todo
+class Connexion
 {
+    protected $conn;
+    protected $error;
 
+    public function __construct()
+    {
+        try {
+            $conn = new PDO(DSN, DBUSER, DBPASS);
+            $this->conn = $conn;
+        } catch (PDOException $e) {
+            return $this->error = $e;
+            echo "Erreur | Construct Connexion : " . $e->getMessage();
+        }
+    }
+    public function getCon()
+    {
+        return $this->conn;
+    }
+    public function getError()
+    {
+        return $this->error;
+    }
+}
+
+class Todo extends Connexion
+{
+    protected $conn;
     private $id;
     private $text;
-    private $dateAjout = null;
+    private $dateAjout;
 
     public function __construct($text)
     {
+        $this->conn = new Connexion;
         $this->text = $text;
         $date = new DateTime();
         $date->setTimezone(new \DateTimeZone('Europe/Paris'));
         $date = $date->format("Y/m/d H:i:s");
         $this->dateAjout = $date;
     }
-
     public function getText()
     {
         return $this->text;
     }
-
     public function getDateAjout()
     {
         return $this->dateAjout;
     }
-
-    private function setId(){
-        $dns = "mysql:host=" . DBHOST . ";dbname=" . DBNAME;
-        try {
-            $conn = new PDO($dns, DBUSER, DBPASS);
-            $sth = $conn->prepare("SELECT id WHERE date_ajout = :datAjout");
-            $sth->bindParam(":datAjout", $this->dateAjout);
-            $id = $sth->execute();
-            var_dump();
-            $this->id = $id;
-        } catch (PDOException $e) {
-            die("Erreur : " . $e->getMessage());
-        }
+    public function getId()
+    {
+        return $this->id;
     }
 
+    public function setId()
+    {
+        $connexion = new Connexion();
+        $conn = $connexion->getCon();
+        $sth = $conn->prepare("SELECT * FROM todo WHERE date_ajout = :dateAjout");
+        $sth->bindParam(":dateAjout", $this->dateAjout);
+        var_dump($this->dateAjout);
+        if ($sth->execute()) {
+            $id = $sth->fetch(PDO::FETCH_ASSOC);
+            $this->id = $id['id'];
+        } else {
+            $erreur = $connexion->getError();
+            die("Function setId() - Erreur : " . $erreur->getMessage());
+        }
+    }
     public function add()
     {
-        $dns = "mysql:host=" . DBHOST . ";dbname=" . DBNAME;
-        try {
-            $conn = new PDO($dns, DBUSER, DBPASS);
-            $sth = $conn->prepare("INSERT INTO todo(text) VALUES(:text)");
-            $sth->bindParam(":text", $this->text);
-            $sth->execute();
+        $connexion = new Connexion();
+        $conn = $connexion->getCon();
+        $sth = $conn->prepare("INSERT INTO todo(text) VALUES(:text)");
+        $sth->bindParam(":text", $this->text);
+        $sth->execute();
+        if ($sth->execute()) {
             $this->setId();
-        } catch (PDOException $e) {
-            die("Erreur : " . $e->getMessage());
+        } else {
+            $erreur = $connexion->getError();
+            die("Function setId() - Erreur : " . $erreur->getMessage());
         }
     }
-
     public function delete($id)
     {
         $dns = "mysql:host=" . DBHOST . ";dbname=" . DBNAME;
@@ -69,7 +98,9 @@ class Todo
     }
 }
 
-// $testTodo = new Todo("Ceci est un test !");
+$connexion = new Connexion;
+var_dump($connexion);
 
-// echo $testTodo->getText() . "<br>";
-// echo $testTodo->getDateAjout() . "<br>";
+$todo = new Todo("Test");
+$todo->add();
+print_r($conn);
