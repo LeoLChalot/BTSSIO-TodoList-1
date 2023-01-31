@@ -1,15 +1,21 @@
-<?php require_once(__DIR__ . '/require/connexion.php') ?>
-<?php
+<?php 
+// require_once(__DIR__ . '/require/connexion.php');
+require_once(__DIR__ . '/require/class.php');
+
 if (!empty($_GET['action'])) {
     $action = htmlspecialchars($_GET['action']);
 
     switch ($action) {
         case 'add':
             if (!empty($_POST['todoAdd'])) {
-                $todoAdd = htmlspecialchars($_POST['todoAdd']);
-                $sth = $conn->prepare("INSERT INTO todo(text) VALUES(:text)");
-                $sth->bindParam(":text", $todoAdd);
-                $sth->execute();
+                $text = htmlspecialchars($_POST['todoAdd']);
+                $todo = new Todo($text);
+                $todo->add();
+                
+                // $todoAdd = htmlspecialchars($_POST['todoAdd']);
+                // $sth = $conn->prepare("INSERT INTO todo(text) VALUES(:text)");
+                // $sth->bindParam(":text", $todoAdd);
+                // $sth->execute();
                 header('location: index.php');
             } else {
                 header('location: index.php');
