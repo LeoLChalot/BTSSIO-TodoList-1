@@ -1,12 +1,15 @@
 <?php
 require_once(__DIR__ . '/require/connexion.php');
 
+if (isset($_POST['submit']) && empty($_POST['text'])) {
+    $err = "Vous devez remplir le champ !";
+}
 if (!empty($_GET['action'])) {
     $action = htmlspecialchars($_GET['action']);
     switch ($action) {
         case 'add':
-            if (!empty($_POST['todoAdd'])) {
-                $text = htmlspecialchars($_POST['todoAdd']);
+            if (!empty($_POST['text'])) {
+                $text = htmlspecialchars($_POST['text']);
                 $sth = $conn->prepare("INSERT INTO todo(text) VALUES(:text)");
                 $sth->bindParam(":text", $text);
                 $sth->execute();
@@ -49,4 +52,7 @@ if (!empty($_GET['action'])) {
             break;
     }
 }
+
+
+
 require_once(__DIR__ . '/require/deconnexion.php');
