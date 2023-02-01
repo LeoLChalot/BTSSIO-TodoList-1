@@ -1,6 +1,5 @@
 <?php
 require_once(__DIR__ . '/require/connexion.php');
-// require_once(__DIR__ . '/require/class.php');
 
 if (!empty($_GET['action'])) {
     $action = htmlspecialchars($_GET['action']);
