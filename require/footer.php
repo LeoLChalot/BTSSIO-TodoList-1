@@ -3,5 +3,5 @@
 <script src="https://kit.fontawesome.com/08b4dc9752.js" crossorigin="anonymous"></script>
 <script src="assets/script/script.js"></script>
 </body>
-
 </html>
+<?php require_once(__DIR__ . '/deconnexion.php') ?>
